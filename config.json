@@ -1,5 +1,6 @@
 {
   "intervalMs": 5000,
+  "refreshMs": 60000,
   "transitionMs": 1000,
   "transition": "fade",
   "shuffle": false,

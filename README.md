@@ -47,6 +47,7 @@ DRIVE_FOLDER_URL=https://drive.google.com/drive/folders/ID_DE_LA_CARPETA
   "driveFolderUrl": "",
   "apiKey": "",
   "intervalMs": 5000,
+  "refreshMs": 60000,
   "transitionMs": 1000,
   "transition": "fade",
   "shuffle": false,
@@ -62,6 +63,7 @@ DRIVE_FOLDER_URL=https://drive.google.com/drive/folders/ID_DE_LA_CARPETA
 | `driveFolderUrl` | Opcional aquí: úsalo solo si no usas `.env`. El `.env` tiene prioridad. |
 | `apiKey`         | Opcional aquí: úsalo solo si no usas `.env`. El `.env` tiene prioridad. |
 | `intervalMs`     | Milisegundos entre imágenes.                                       |
+| `refreshMs`      | Cada cuánto revisa la carpeta de Drive para detectar fotos nuevas o borradas (mín. 15000). |
 | `transitionMs`   | Duración de la transición.                                         |
 | `transition`     | `fade`, `slide` o `zoom`.                                          |
 | `shuffle`        | `true` para orden aleatorio.                                       |
@@ -80,8 +82,9 @@ Para que la web lea la carpeta sola necesitas una **API key**:
 4. En Drive, comparte la carpeta como **"Cualquier persona con el enlace"**.
 5. Copia la URL de la carpeta en `driveFolderUrl`.
 
-La página listará todas las imágenes de la carpeta y se actualizará al recargar
-si añades o quitas fotos en Drive.
+La página listará todas las imágenes de la carpeta y se actualiza sola cada
+`refreshMs` (por defecto cada minuto) si añades o quitas fotos en Drive, sin
+necesidad de recargar.
 
 ## Sin API key (modo manual)
 

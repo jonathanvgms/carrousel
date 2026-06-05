@@ -21,6 +21,8 @@
     images: [], // [{ id, name }]
     index: 0,
     timer: null,
+    refreshTimer: null,
+    refreshing: false,
     slides: [],
     dots: [],
   };
@@ -151,7 +153,9 @@
       });
       if (pageToken) params.set("pageToken", pageToken);
 
-      const res = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`);
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`, {
+        cache: "no-cache",
+      });
       const data = await res.json();
       if (!res.ok) {
         const reason = data && data.error ? data.error.message : res.statusText;
@@ -287,6 +291,61 @@
     startTimer();
   }
 
+  // ---------- Auto-refresco (detecta cambios en la carpeta de Drive) ----------
+
+  /** Firma de la lista para detectar si las fotos cambiaron. */
+  function imagesSignature(images) {
+    return images.map((img) => img.id || img.url).join("|");
+  }
+
+  /**
+   * Vuelve a consultar la carpeta y, solo si las fotos cambiaron, reconstruye
+   * el carrusel sin recargar la página ni re-vincular los controles.
+   */
+  async function refreshImages() {
+    if (state.refreshing) return;
+    state.refreshing = true;
+    try {
+      const fresh = await resolveImages(state.config);
+
+      // Un fallo transitorio o una lista vacía: no tocamos lo que ya se ve.
+      if (!fresh.length) return;
+      if (imagesSignature(fresh) === imagesSignature(state.images)) return;
+
+      // Recordamos qué foto se estaba viendo para intentar mantenerla.
+      const current = state.images[state.index];
+      const currentKey = current ? current.id || current.url : null;
+
+      if (state.config.shuffle) shuffleArray(fresh);
+      state.images = fresh;
+
+      stopTimer();
+      buildSlides();
+      buildDots();
+
+      const keep = currentKey
+        ? state.images.findIndex((img) => (img.id || img.url) === currentKey)
+        : -1;
+      state.index = keep >= 0 ? keep : Math.min(state.index, state.images.length - 1);
+
+      render();
+      startTimer();
+    } catch (_err) {
+      // Mantener el carrusel actual ante errores de red/API.
+    } finally {
+      state.refreshing = false;
+    }
+  }
+
+  function startRefreshTimer() {
+    // Solo tiene sentido en modo Drive (listado dinámico).
+    const folderId = extractFolderId(state.config.driveFolderUrl);
+    if (!state.config.apiKey || !folderId) return;
+
+    const interval = Math.max(15000, state.config.refreshMs || 60000);
+    state.refreshTimer = setInterval(refreshImages, interval);
+  }
+
   // ---------- Controles ----------
 
   function setupControls() {
@@ -374,6 +433,7 @@
     hideStatus();
     render();
     startTimer();
+    startRefreshTimer();
   }
 
   init();

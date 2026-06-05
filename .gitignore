@@ -1,2 +1,8 @@
 # Credenciales locales: nunca subir.
 .env
+
+# Generado por build-env.js (contiene las credenciales). No subir.
+env.js
+
+# Node
+node_modules/

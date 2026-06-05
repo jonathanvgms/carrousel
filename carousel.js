@@ -108,8 +108,18 @@
     return env;
   }
 
-  /** Lee credenciales desde .env (opcional). Devuelve {} si no existe. */
+  /**
+   * Lee las credenciales. Por orden de prioridad:
+   * 1. window.CAROUSEL_ENV — inyectado en el build desde las variables de
+   *    entorno (Vercel). Lo genera build-env.js en env.js.
+   * 2. Archivo .env — para desarrollo local servido con python http.server.
+   * Devuelve {} si no hay ninguna.
+   */
   async function loadEnv() {
+    const injected = window.CAROUSEL_ENV;
+    if (injected && (injected.API_KEY || injected.GOOGLE_API_KEY || injected.DRIVE_FOLDER_URL)) {
+      return injected;
+    }
     try {
       const res = await fetch(".env", { cache: "no-cache" });
       if (!res.ok) return {};

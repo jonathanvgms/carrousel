@@ -108,4 +108,30 @@ servidor local, por ejemplo:
 python3 -m http.server 8000
 ```
 
-Y abre http://localhost:8000 en el navegador.
+Y abre http://localhost:8000 en el navegador. En local, las credenciales se
+leen del archivo `.env`.
+
+## Desplegar en Vercel
+
+Como es un sitio estático, las *Environment Variables* de Vercel no llegan
+solas al navegador: hay que **inyectarlas en el build**. Eso ya está montado
+(`build-env.js` + `vercel.json`), que genera `env.js` con las credenciales.
+
+Pasos:
+
+1. Sube el proyecto a GitHub (el `.env` y `env.js` **no** se suben: están en
+   `.gitignore`).
+2. En Vercel → tu proyecto → **Settings → Environment Variables**, añade:
+   - `API_KEY` = tu API key de Google
+   - `DRIVE_FOLDER_URL` = URL de la carpeta de Drive
+3. Haz **Redeploy** (las variables deben existir *antes* del build que las usa).
+
+En cada build, Vercel ejecuta `node build-env.js`, que crea `env.js` a partir de
+esas variables, y `carousel.js` lo lee desde el navegador.
+
+> ⚠️ Aunque las credenciales no estén en git, en el sitio publicado la API key
+> viaja al navegador (cualquiera puede verla en `env.js`). Esto es inevitable en
+> una web 100% cliente. Protégela **restringiéndola** en Google Cloud Console:
+> *Application restrictions → HTTP referrers* (tu dominio `*.vercel.app`) y
+> *API restrictions → Google Drive API*. Si necesitas que la clave sea
+> realmente secreta, habría que usar una función serverless como proxy.

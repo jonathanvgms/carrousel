@@ -86,6 +86,47 @@
     return res.json();
   }
 
+  /** Parsea el contenido de un archivo .env (líneas CLAVE=valor) en un objeto. */
+  function parseEnv(text) {
+    const env = {};
+    text.split(/\r?\n/).forEach((rawLine) => {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) return;
+      const eq = line.indexOf("=");
+      if (eq === -1) return;
+      const key = line.slice(0, eq).trim();
+      let value = line.slice(eq + 1).trim();
+      // Quita comillas envolventes si las hay.
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
+        value = value.slice(1, -1);
+      }
+      if (key) env[key] = value;
+    });
+    return env;
+  }
+
+  /** Lee credenciales desde .env (opcional). Devuelve {} si no existe. */
+  async function loadEnv() {
+    try {
+      const res = await fetch(".env", { cache: "no-cache" });
+      if (!res.ok) return {};
+      return parseEnv(await res.text());
+    } catch (_err) {
+      return {};
+    }
+  }
+
+  /** Fusiona las credenciales del .env sobre la config (el .env tiene prioridad). */
+  function applyEnv(config, env) {
+    const apiKey = env.API_KEY || env.GOOGLE_API_KEY;
+    if (apiKey) config.apiKey = apiKey;
+    if (env.DRIVE_FOLDER_URL) config.driveFolderUrl = env.DRIVE_FOLDER_URL;
+    return config;
+  }
+
   /** Lista imágenes de la carpeta usando la API de Google Drive (requiere apiKey). */
   async function fetchImagesFromDrive(folderId, apiKey) {
     const images = [];
@@ -282,7 +323,8 @@
 
   async function init() {
     try {
-      state.config = await loadConfig();
+      const [config, env] = await Promise.all([loadConfig(), loadEnv()]);
+      state.config = applyEnv(config, env);
     } catch (err) {
       showStatus("No se pudo cargar config.json. Ábrelo desde un servidor web (no como archivo).", true);
       return;

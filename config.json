@@ -1,6 +1,4 @@
 {
-  "driveFolderUrl": "https://drive.google.com/drive/folders/1ehoOfJ8rw-HD9-_Gx4uwTcnqYLUqafh1?usp=sharing",
-  "apiKey": "AIzaSyDIb0HMJXHzXPu2iFC1BtVIZXsvVAg239E",
   "intervalMs": 5000,
   "transitionMs": 1000,
   "transition": "fade",

@@ -7,15 +7,45 @@ de Google Drive. Toda la configuración está en `config.json`.
 
 - `index.html` — estructura de la página
 - `styles.css` — estilos y transiciones
-- `carousel.js` — lógica (lee `config.json`, obtiene las imágenes y las anima)
-- `config.json` — **lo único que tienes que editar**
+- `carousel.js` — lógica (lee `.env` y `config.json`, obtiene las imágenes y las anima)
+- `.env` — **credenciales** (API key y carpeta de Drive); no se sube a git
+- `.env.example` — plantilla de `.env` para copiar
+- `config.json` — opciones de visualización (intervalos, transición, etc.)
 
-## Configuración (`config.json`)
+## Credenciales (`.env`)
+
+Las credenciales se cargan desde un archivo `.env`. Para empezar, copia la
+plantilla y rellena tus valores:
+
+```bash
+cp .env.example .env
+```
+
+```env
+API_KEY=TU_API_KEY_DE_GOOGLE
+DRIVE_FOLDER_URL=https://drive.google.com/drive/folders/ID_DE_LA_CARPETA
+```
+
+| Clave              | Descripción                                                    |
+| ------------------ | -------------------------------------------------------------- |
+| `API_KEY`          | API key de Google con la *Drive API* habilitada (ver abajo).  |
+| `DRIVE_FOLDER_URL` | URL (o ID) de la carpeta de Drive **compartida públicamente**. |
+
+> El `.env` está en `.gitignore` para que tus credenciales no acaben en el
+> repositorio. Si no existe `.env`, se usan los valores de `config.json`.
+>
+> ⚠️ **Importante:** al ser una web estática, el navegador descarga el `.env` y
+> la API key queda visible para cualquiera que abra la página. El `.env` sirve
+> para no commitear la clave, **no** para ocultarla del usuario final. Protege
+> de verdad la clave **restringiéndola** en Google Cloud Console (por
+> referrers HTTP y limitándola a la *Drive API*).
+
+## Configuración de visualización (`config.json`)
 
 ```json
 {
-  "driveFolderUrl": "https://drive.google.com/drive/folders/ID_DE_LA_CARPETA",
-  "apiKey": "TU_API_KEY_DE_GOOGLE",
+  "driveFolderUrl": "",
+  "apiKey": "",
   "intervalMs": 5000,
   "transitionMs": 1000,
   "transition": "fade",
@@ -29,8 +59,8 @@ de Google Drive. Toda la configuración está en `config.json`.
 
 | Clave            | Descripción                                                        |
 | ---------------- | ------------------------------------------------------------------ |
-| `driveFolderUrl` | URL (o ID) de la carpeta de Drive **compartida públicamente**.     |
-| `apiKey`         | API key de Google con la *Drive API* habilitada (ver abajo).       |
+| `driveFolderUrl` | Opcional aquí: úsalo solo si no usas `.env`. El `.env` tiene prioridad. |
+| `apiKey`         | Opcional aquí: úsalo solo si no usas `.env`. El `.env` tiene prioridad. |
 | `intervalMs`     | Milisegundos entre imágenes.                                       |
 | `transitionMs`   | Duración de la transición.                                         |
 | `transition`     | `fade`, `slide` o `zoom`.                                          |

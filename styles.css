@@ -22,86 +22,48 @@ body {
 }
 
 /* ---- Escenario (toda la pantalla) ---- */
-.stage {
+.carousel {
   position: relative;
   width: 100vw;
   height: 100vh;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
   background:
     radial-gradient(120% 120% at 50% 0%, #2a2622 0%, #14110f 60%, #0b0908 100%);
 }
 
-/* ---- Fondo ambiental: la imagen activa difuminada ---- */
-.ambient {
+/* ---- Fondo ambiental: la imagen activa, difuminada ---- */
+.carousel__ambient {
   position: absolute;
-  inset: -40px; /* desborda para que el blur no deje bordes */
+  inset: -60px; /* desborda para que el blur no deje bordes */
+  z-index: 0;
   background-position: center;
   background-size: cover;
-  filter: blur(36px) brightness(0.45) saturate(1.1);
-  transform: scale(1.1);
+  filter: blur(42px) brightness(0.5) saturate(1.15);
+  transform: scale(1.12);
   opacity: 0;
   transition: opacity var(--transition-ms) ease-in-out;
-  z-index: 0;
 }
-.ambient.is-ready {
+.carousel__ambient.is-ready {
   opacity: 1;
 }
 
-/* ---- Marco tipo retrato ---- */
-.frame {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  width: min(72vmin, 560px);
-  max-height: 88vh;
-  aspect-ratio: 4 / 5; /* orientación retrato */
-  padding: 26px; /* grosor de la moldura */
-  border-radius: 4px;
-  background:
-    linear-gradient(145deg, #3a2f23, #6b5536 18%, #2c2419 52%, #7a5f3a 80%, #211b13);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.55) inset,
-    0 45px 90px -25px rgba(0, 0, 0, 0.8),
-    0 12px 28px rgba(0, 0, 0, 0.55);
-}
-
-/* Passe-partout (paspartú) crema con filo dorado */
-.frame__mat {
-  position: relative;
-  height: 100%;
-  padding: 22px;
-  background: #f5f1e8;
-  box-shadow:
-    0 0 0 1px #c9a45a,
-    inset 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Ventana de la imagen */
-.carousel {
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-  background: #000;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.5),
-    inset 0 0 34px rgba(0, 0, 0, 0.5);
-}
-
+/* ---- Pista de diapositivas (ocupa toda la pantalla) ---- */
 .carousel__track {
   position: absolute;
   inset: 0;
+  z-index: 1;
 }
 
-/* ---- Diapositivas ---- */
+/* ---- Diapositivas: la foto completa, centrada (sin recortar) ---- */
 .slide {
   position: absolute;
-  inset: 0;
+  /* Deja un margen para que se vea el fondo difuminado alrededor del retrato */
+  inset: 4vh 3vw;
   opacity: 0;
   background-position: center;
-  background-size: cover;
+  background-size: contain; /* muestra la imagen entera, en vertical */
   background-repeat: no-repeat;
+  filter: drop-shadow(0 25px 55px rgba(0, 0, 0, 0.7));
   transition: opacity var(--transition-ms) ease-in-out,
     transform var(--transition-ms) ease-in-out;
   pointer-events: none;
@@ -132,8 +94,8 @@ body {
   transform: scale(1);
 }
 
-/* ---- Flechas de navegación (a los lados del marco) ---- */
-.nav {
+/* ---- Flechas de navegación ---- */
+.carousel__arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -152,21 +114,21 @@ body {
   transition: background 0.2s ease, transform 0.2s ease;
   backdrop-filter: blur(4px);
 }
-.nav:hover {
+.carousel__arrow:hover {
   background: rgba(0, 0, 0, 0.65);
 }
-.nav:active {
+.carousel__arrow:active {
   transform: translateY(-50%) scale(0.92);
 }
-.nav--prev {
-  left: max(24px, 4vw);
+.carousel__arrow--prev {
+  left: max(20px, 3vw);
 }
-.nav--next {
-  right: max(24px, 4vw);
+.carousel__arrow--next {
+  right: max(20px, 3vw);
 }
 
 /* ---- Indicadores (dots) ---- */
-.dots {
+.carousel__dots {
   position: absolute;
   bottom: 22px;
   left: 50%;
@@ -179,7 +141,7 @@ body {
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(4px);
 }
-.dots[hidden] {
+.carousel__dots[hidden] {
   display: none;
 }
 
@@ -199,7 +161,7 @@ body {
 }
 
 /* ---- Logo de la escuela (abajo a la derecha) ---- */
-.logo {
+.carousel__logo {
   position: fixed;
   right: 26px;
   bottom: 22px;
@@ -213,7 +175,7 @@ body {
 }
 
 /* ---- Estado / mensajes ---- */
-.status {
+.carousel__status {
   position: absolute;
   inset: 0;
   display: grid;
@@ -224,16 +186,16 @@ body {
   color: rgba(255, 255, 255, 0.8);
   z-index: 40;
 }
-.status[hidden] {
+.carousel__status[hidden] {
   display: none;
 }
-.status.is-error {
+.carousel__status.is-error {
   color: #ff9b9b;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .slide,
-  .ambient {
+  .carousel__ambient {
     transition-duration: 1ms;
   }
 }

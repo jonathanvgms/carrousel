@@ -7,30 +7,27 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="stage">
-    <!-- Fondo ambiental difuminado (la misma imagen activa, borrosa) -->
-    <div class="ambient" id="ambient" aria-hidden="true"></div>
+  <main class="carousel" id="carousel" aria-roledescription="carrusel" aria-label="Galería de imágenes">
+    <!-- Fondo: la imagen activa, difuminada -->
+    <div class="carousel__ambient" id="ambient" aria-hidden="true"></div>
 
-    <button class="nav nav--prev" id="prevBtn" aria-label="Imagen anterior" hidden>&#10094;</button>
+    <!-- Las diapositivas (la foto completa, en vertical) se insertan desde carousel.js -->
+    <div class="carousel__track" id="track"></div>
 
-    <!-- Marco tipo retrato -->
-    <figure class="frame">
-      <div class="frame__mat">
-        <div class="carousel" id="carousel" aria-roledescription="carrusel" aria-label="Galería de imágenes">
-          <div class="carousel__track" id="track"></div>
-        </div>
-      </div>
-    </figure>
+    <button class="carousel__arrow carousel__arrow--prev" id="prevBtn" aria-label="Imagen anterior" hidden>
+      &#10094;
+    </button>
+    <button class="carousel__arrow carousel__arrow--next" id="nextBtn" aria-label="Imagen siguiente" hidden>
+      &#10095;
+    </button>
 
-    <button class="nav nav--next" id="nextBtn" aria-label="Imagen siguiente" hidden>&#10095;</button>
-
-    <div class="dots" id="dots" hidden></div>
+    <div class="carousel__dots" id="dots" hidden></div>
 
     <!-- Logo de la escuela: abajo a la derecha -->
-    <img class="logo" src="et12.svg" alt="Logo de la escuela ET12" />
+    <img class="carousel__logo" src="et12.svg" alt="Logo de la escuela ET12" />
 
-    <div class="status" id="status">Cargando imágenes…</div>
-  </div>
+    <div class="carousel__status" id="status">Cargando imágenes…</div>
+  </main>
 
   <script src="carousel.js"></script>
 </body>

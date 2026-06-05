@@ -81,8 +81,11 @@ body {
    Al usar max-width/height + auto, la caja se ajusta al tamaño real de la
    imagen, así el border-radius sigue de verdad el borde de la foto. */
 .slide__img {
-  max-width: 100%;
-  max-height: 100%;
+  /* En vh/vw (no %): un max-height en % no se resolvía en el grid y las
+     fotos verticales se desbordaban del monitor. Con vh el alto SÍ se limita.
+     92vh y 94vw dejan el mismo margen (4vh / 3vw) que el recuadro. */
+  max-width: 94vw;
+  max-height: 92vh;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -140,6 +143,11 @@ body {
 }
 .carousel__arrow--next {
   right: max(20px, 3vw);
+}
+/* Sin esto, el display:grid de arriba anula el atributo hidden y las
+   flechas se mostrarían siempre (aunque showArrows sea false). */
+.carousel__arrow[hidden] {
+  display: none;
 }
 
 /* ---- Indicadores (dots) ---- */

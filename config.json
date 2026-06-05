@@ -1,11 +1,11 @@
 {
   "intervalMs": 5000,
   "refreshMs": 10000,
-  "transitionMs": 1000,
+  "transitionMs": 1400,
   "transition": "fade",
   "shuffle": false,
-  "showArrows": true,
-  "showDots": true,
+  "showArrows": false,
+  "showDots": false,
   "pauseOnHover": true,
   "fallbackImages": []
 }

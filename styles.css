@@ -1,6 +1,8 @@
 :root {
   /* carousel.js sobrescribe --transition-ms con el valor de config.json */
   --transition-ms: 1000ms;
+  /* Curva suave (easeInOutSine) para que el fundido entre fotos sea más fluido */
+  --ease: cubic-bezier(0.37, 0, 0.63, 1);
   --bg: #14110f;
 }
 
@@ -41,7 +43,7 @@ body {
   filter: blur(42px) brightness(0.5) saturate(1.15);
   transform: scale(1.12);
   opacity: 0;
-  transition: opacity var(--transition-ms) ease-in-out;
+  transition: opacity var(--transition-ms) var(--ease);
 }
 .carousel__ambient.is-ready {
   opacity: 1;
@@ -59,20 +61,33 @@ body {
   position: absolute;
   /* Deja un margen para que se vea el fondo difuminado alrededor del retrato */
   inset: 4vh 3vw;
+  display: grid;
+  place-items: center; /* centra la foto dentro del recuadro */
   opacity: 0;
-  background-position: center;
-  background-size: contain; /* muestra la imagen entera, en vertical */
-  background-repeat: no-repeat;
-  filter: drop-shadow(0 25px 55px rgba(0, 0, 0, 0.7));
-  transition: opacity var(--transition-ms) ease-in-out,
-    transform var(--transition-ms) ease-in-out;
+  transform: scale(1.04); /* leve zoom de entrada para un fundido más suave */
+  transition: opacity var(--transition-ms) var(--ease),
+    transform var(--transition-ms) var(--ease);
   pointer-events: none;
   will-change: opacity, transform;
 }
 
 .slide.is-active {
   opacity: 1;
+  transform: scale(1);
   pointer-events: auto;
+}
+
+/* La foto en sí: entera (sin recortar) y con las esquinas redondeadas.
+   Al usar max-width/height + auto, la caja se ajusta al tamaño real de la
+   imagen, así el border-radius sigue de verdad el borde de la foto. */
+.slide__img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: clamp(12px, 1.6vw, 26px);
+  filter: drop-shadow(0 25px 55px rgba(0, 0, 0, 0.7));
 }
 
 /* ---- Transición: slide (deslizar) ---- */

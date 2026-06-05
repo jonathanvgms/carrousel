@@ -196,25 +196,50 @@
       slide.setAttribute("aria-roledescription", "diapositiva");
       slide.setAttribute("aria-label", `${i + 1} de ${state.images.length}`);
 
-      const primary = img.url || driveImageUrl(img.id);
-      img._displayUrl = primary;
-      slide.style.backgroundImage = `url("${primary}")`;
+      const picture = document.createElement("img");
+      picture.className = "slide__img";
+      picture.alt = img.name || "";
+      picture.decoding = "async";
 
-      // Si falla la URL principal de Drive, intenta la alternativa.
-      if (img.id) {
-        const probe = new Image();
-        probe.onerror = () => {
-          const alt = driveImageUrlFallback(img.id);
-          img._displayUrl = alt;
-          slide.style.backgroundImage = `url("${alt}")`;
-          if (i === state.index) setAmbient(alt);
-        };
-        probe.src = primary;
-      }
+      img._displayUrl = img.url || driveImageUrl(img.id);
+      img._fallbackUrl = img.id ? driveImageUrlFallback(img.id) : null;
+      img._loaded = false;
+      img._el = picture;
 
+      // Si la URL principal de Drive falla (o llega throttleada), intenta una
+      // sola vez la alternativa. Sin probe: reaccionamos al error real del <img>.
+      picture.addEventListener("error", () => {
+        if (img._fallbackUrl && picture.src.indexOf("/thumbnail") === -1) {
+          img._displayUrl = img._fallbackUrl;
+          picture.src = img._fallbackUrl;
+          if (i === state.index) setAmbient(img._fallbackUrl);
+        }
+      });
+
+      slide.appendChild(picture);
       els.track.appendChild(slide);
       return slide;
     });
+    // No cargamos las 16 a la vez (Google throttlea y llegan a medias):
+    // solo la actual y sus vecinas; el resto se cargan al acercarse.
+    loadWindow();
+  }
+
+  /** Fija el src real de una imagen (una sola vez) para disparar su descarga. */
+  function ensureLoaded(i) {
+    const img = state.images[i];
+    if (!img || img._loaded || !img._el) return;
+    img._loaded = true;
+    img._el.src = img._displayUrl;
+  }
+
+  /** Precarga la foto actual y las inmediatamente anterior y siguiente. */
+  function loadWindow() {
+    const n = state.images.length;
+    if (!n) return;
+    ensureLoaded(state.index);
+    ensureLoaded((state.index + 1) % n);
+    ensureLoaded((state.index - 1 + n) % n);
   }
 
   function setAmbient(url) {
@@ -242,6 +267,7 @@
   }
 
   function render() {
+    loadWindow(); // asegura que la actual y sus vecinas estén cargándose
     state.slides.forEach((slide, i) => {
       slide.classList.toggle("is-active", i === state.index);
       slide.classList.toggle("is-prev", i === prevIndex());

@@ -1,11 +1,14 @@
 {
   "intervalMs": 5000,
-  "refreshMs": 10000,
   "transitionMs": 1400,
   "transition": "fade",
   "shuffle": false,
   "showArrows": false,
   "showDots": false,
   "pauseOnHover": true,
-  "fallbackImages": []
+  "images": [
+    "img/pexels-mike-art-visual-creator-photography-and-video-2159421235-36344429.jpg",
+    "img/pexels-veronika-benz-2161114250-37280078.jpg",
+    "img/pexels-veronika-benz-2161114250-37308562.jpg"
+  ]
 }

@@ -1,6 +1,6 @@
 /**
- * Carrusel de imágenes leídas desde una carpeta pública de Google Drive.
- * La configuración se carga desde config.json (no hay nada hardcodeado aquí).
+ * Carrusel de imágenes leídas desde la carpeta img/ local.
+ * La configuración se carga desde config.json.
  */
 
 (function () {
@@ -18,11 +18,9 @@
 
   const state = {
     config: null,
-    images: [], // [{ id, name }]
+    images: [], // [{ url, name }]
     index: 0,
     timer: null,
-    refreshTimer: null,
-    refreshing: false,
     slides: [],
     dots: [],
   };
@@ -170,6 +168,11 @@
 
   /** Resuelve la lista de imágenes según la config disponible. */
   async function resolveImages(config) {
+    // 0. Imágenes listadas directamente en config.json
+    if (Array.isArray(config.images) && config.images.length) {
+      return config.images.map((url) => ({ url, name: url.split("/").pop() }));
+    }
+
     const folderId = extractFolderId(config.driveFolderUrl);
 
     if (config.apiKey && folderId) {
@@ -444,7 +447,7 @@
 
     if (!images.length) {
       showStatus(
-        "No se encontraron imágenes. Revisa la carpeta de Drive, la apiKey o fallbackImages en config.json.",
+        "No se encontraron imágenes. Revisá la ruta 'images' en config.json y ejecutá node build-env.js.",
         true
       );
       return;
